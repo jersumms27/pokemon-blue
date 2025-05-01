@@ -2,13 +2,13 @@ import time, os
 
 from transition import State
 
-action_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/action.txt'
-state_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/state.txt'
-reset_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/reset.txt'
-exit_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/exit.txt'
+action_path: str = 'C:/Users/jerem/Pokemon Blue DQN/communication/action.txt'
+state_path: str = 'C:/Users/jerem/Pokemon Blue DQN/communication/state.txt'
+reset_path: str = 'C:/Users/jerem/Pokemon Blue DQN/communication/reset.txt'
+exit_path: str = 'C:/Users/jerem/Pokemon Blue DQN/communication/exit.txt'
 
-action_ready_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/action_ready.txt'
-state_ready_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/state_ready.txt'
+action_ready_path: str = 'C:/Users/jerem/Pokemon Blue DQN/communication/action_ready.txt'
+state_ready_path: str = 'C:/Users/jerem/Pokemon Blue DQN/communication/state_ready.txt'
 
 
 def write_action(action: int) -> None:

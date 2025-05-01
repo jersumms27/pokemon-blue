@@ -21,10 +21,10 @@ max_actions_incr: int = 0
 device: torch.device = torch.device('cuda')
 max_mem: int = 10000 # max number of transitions stored
 
-model_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/model/dqn_params.pth'
-epsilon_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/model/epsilon.txt'
-reward_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/data/reward_plot.png'
-component_path: str = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/data/component_plot.png'
+model_path: str = 'C:/Users/jerem/Pokemon Blue DQN/model/dqn_params.pth'
+epsilon_path: str = 'C:/Users/jerem/Pokemon Blue DQN/model/epsilon.txt'
+reward_path: str = 'C:/Users/jerem/Pokemon Blue DQN/data/reward_plot.png'
+component_path: str = 'C:/Users/jerem/Pokemon Blue DQN/data/component_plot.png'
 
 lr: float = 1e-3 # learning rate
 start_training: int = 128

@@ -9,13 +9,13 @@
 -- R = 8
 -- L = 9
 
-local action_path = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/action.txt'
-local state_path = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/state.txt'
-local reset_path = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/reset.txt'
-local exit_path = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/exit.txt'
+local action_path = 'C:/Users/jerem/Pokemon Blue DQN/communication/action.txt'
+local state_path = 'C:/Users/jerem/Pokemon Blue DQN/communication/state.txt'
+local reset_path = 'C:/Users/jerem/Pokemon Blue DQN/communication/reset.txt'
+local exit_path = 'C:/Users/jerem/Pokemon Blue DQN/communication/exit.txt'
 
-local action_ready_path = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/action_ready.txt'
-local state_ready_path = 'C:/Users/jerem/BYU Winter 2025/C S 474/Final Project/communication/state_ready.txt'
+local action_ready_path = 'C:/Users/jerem/Pokemon Blue DQN/communication/action_ready.txt'
+local state_ready_path = 'C:/Users/jerem/Pokemon Blue DQN/communication/state_ready.txt'
 local save_slot = 1
 
 local DEBUG_MODE = false
