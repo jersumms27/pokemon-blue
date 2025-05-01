@@ -80,6 +80,10 @@ class State:
 
     def __getitem__(self, key: str) -> float:
         return self.memory[State.memory_map[key]]
+    
+
+    def __str__(self) -> str:
+         return ' '.join(str(key) + ':' + str(val) for key, val in zip(self.memory_map.keys(), self.memory))
 
 
 class Transition:
@@ -105,6 +109,7 @@ class Transition:
         
 
         is_reset: bool = self.next_state['num actions'] < self.state['num actions']
+        battle_started: bool = self.next_state['battle type'] != 0 and self.state['battle type'] == 0
         battle_won: bool = self.state['enemy pokemon hp 2'] + 256 * self.state['enemy pokemon hp 1'] == 0
 
         player_hp_diff: float
@@ -119,18 +124,20 @@ class Transition:
         exp_diff: float = get_diff(['player pokemon exp 3', 'player pokemon exp 2', 'player pokemon exp 1']) / 10000
         party_diff: float = get_diff(['number of pokemon in party'])
         money_diff: float = get_diff(['money 3', 'money 2', 'money 1']) / 1000
+        battle_diff: float = float(battle_started)
 
         # clamping enemy hp and exp because battle/emulator resets
         # also reset enemy hp and exp, resulting in harsh negative rewards
 
         # clamping player hp to only benefit healing, not penalize damage
         self.reward_components = {
-            'player_hp': 0.20 * max(0.0, player_hp_diff),
-            'enemy_hp': max(0.0, -0.20 * enemy_hp_diff),
+            'player_hp': 0.15 * max(0.0, player_hp_diff),
+            'enemy_hp': max(0.0, -0.15 * enemy_hp_diff),
             'level': 0.20 * level_diff,
             'exp': 0.20 * max(0.0, exp_diff),
             'party': 0.15 * party_diff,
             'money': 0.05 * money_diff,
+            'battle': 0.10 * battle_diff
         }
 
         if self.next_state['number of badges'] == 1:
@@ -148,6 +155,8 @@ class Transition:
 
         reward = sum(self.reward_components.values())
         reward = max(-1.0 + 1e-6, min(1.0 - 1e-6, reward))
+        if self.state['battle type'] == 0 and self.action < 2:
+            reward -= 0.10
 
         return reward
     
@@ -158,3 +167,13 @@ class Transition:
         yield self.reward
         yield self.next_state
         yield self.terminal
+
+
+    def __str__(self) -> str:
+        return str({
+            'state': self.state.__str__(),
+            'action': self.action,
+            'reward': self.reward,
+            'next state': self.next_state.__str__(),
+            'terminal': self.terminal
+        })
