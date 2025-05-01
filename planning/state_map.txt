@@ -1,0 +1,678 @@
+SRAM
+
+Bank 2
+A000 - A461 : Box 1
+A462 - A8C3 : Box 2
+A8C4 - AD25 : Box 3
+AD26 - B187 : Box 4
+B188 - B5E9 : Box 5
+B5EA - BA4B : Box 6
+
+Bank 3
+A000 - A461 : Box 7
+A462 - A8C3 : Box 8
+A8C4 - AD25 : Box 9
+AD26 - B187 : Box 10
+B188 - B5E9 : Box 11
+B5EA - BA4B : Box 12
+
+WRAM
+
+Tile data
+C3A0 to C507 : Buffer of all tiles onscreen
+C508 to C5CF : Copy of previous buffer (used to restore tiles after closing menus)
+
+Menu data
+Coordinates of the position of the cursor for the top menu item (id 0)
+CC24 : Y position
+CC25 : X position
+
+CC26 - Currently selected menu item (topmost is 0)
+CC2C - Last position of the cursor on the item screen
+CC2D - Last position of the cursor on the START / battle menu
+CC35 - Item highlighted with Select (01 = first item, 00 = no item, etc.)
+
+Battle
+CCD5 - Number of turns in current battle
+CCD7 - Player's Substitute HP
+CCD8 - Enemy Substitute HP
+CCDB - Move menu type : 0 is regular, 1 is mimic, other are text boxes (learn, PP-refill...)
+CCDC - Player-selected move
+CCDD - Enemy-selected move
+
+CCEE - Player move that the enemy disabled
+CCEF - Enemy move that the player disabled
+CCF6 - Is low-health alarm disabled ?
+CD05~CD06 - Amount of damage the enemy accumulated while Biding
+CD1A - Player's Pokémon Attack modifier (7 means no modifier)
+CD1B - Player's Pokémon Defense modifier
+CD1C - Player's Pokémon Speed modifier
+CD1D - Player's Pokémon Special modifier
+CD1E - Player's Pokémon Accuracy modifier
+CD1F - Player's Pokémon Evasion modifier
+CD2F - Enemy's Pokémon Defense modifier
+CD30 - Enemy's Pokémon Speed modifier
+CD31 - Enemy's Pokémon Special modifier
+CD32 - Enemy's Pokémon Accuracy modifier
+CD33 - Enemy's Pokémon Evasion modifier
+
+Battle
+CFD3 - Your Move Effect (e.g. 10h = coins scatter everywhere)
+CFD5 - Your Move Type
+CCDC - Your Move Used
+
+JPN addr.	INT addr.	Description
+CFB3	CFCC	Enemy's Move ID
+CFB4	CFCD	Enemy's Move Effect
+CFB5	CFCE	Enemy's Move Power
+CFB6	CFCF	Enemy's Move Type
+CFB7	CFD0	Enemy's Move Accuracy
+CFB8	CFD1	Enemy's Move Max PP
+CFB9	CFD2	Player's Move ID
+CFBA	CFD3	Player's Move Effect
+CFBB	CFD4	Player's Move Power
+CFBC	CFD5	Player's Move Type
+CFBD	CFD6	Player's Move Accuracy
+CFBE	CFD7	Player's Move Max PP
+CFBF	CFD8	Enemy's Pokémon internal ID
+CFC0	CFD9	Player's Pokémon internal ID
+CFC1-CFCB	CFDA-CFE4	Enemy's Name
+CFCC	CFE5	Enemy's Pokémon internal ID
+CFCD-CFCE	CFE6-CFE7	Enemy's HP
+CFCF	CFE8	Enemy's Level
+CFD0	CFE9	Enemy's Status
+Bit 6 : Paralyzed
+Bit 5 : Frozen
+Bit 4 : Burned
+Bit 3 : Poisoned
+Bits 0-2 : Sleep counter
+CFD1	CFEA	Enemy's Type 1
+CFD2	CFEB	Enemy's Type 2
+CFD3	CFEC	Enemy's Catch Rate (Unused, only referenced by Transform script, the one actually used is at CFEE (JPN)/D007 (INT))
+CFD4	CFED	Enemy's Move 1
+CFD5	CFEE	Enemy's Move 2
+CFD6	CFEF	Enemy's Move 3
+CFD7	CFF0	Enemy's Move 4
+CFD8	CFF1	Enemy's Attack and Defense IVs
+CFD9	CFF2	Enemy's Speed and Special IVs
+CFDA	CFF3	Enemy's Level
+CFDB-CFDC	CFF4-CFF5	Enemy's Max HP
+CFDD-CFDE	CFF6-CFF7	Enemy's Attack
+CFDF-CFE0	CFF8-CFF9	Enemy's Defense
+CFE1-CFE2	CFFA-CFFB	Enemy's Speed
+CFE3-CFE4	CFFC-CFFD	Enemy's Special
+CFE5	CFFE	Enemy's PP (First Slot)
+CFE6	CFFF	Enemy's PP (Second Slot)
+CFE7	D000	Enemy's PP (Third Slot)
+CFE8	D001	Enemy's PP (Fourth Slot)
+CFE9-CFED	D002-D006	Enemy's Base Stats
+CFEE	D007	Enemy's Catch Rate
+CFEF	D008	Enemy's Base Experience
+Pokémon 1st Slot (In-Battle)
+
+JPN addr.	INT addr.	Description
+CFF0-CFFA	D009-D013	Name
+CFFB	D014	Pokémon Number
+CFFC-CFFD	D015-D016	Current HP
+CFFE	D017	
+CFFF	D018	Status
+Bit 6 : Paralyzed
+Bit 5 : Frozen
+Bit 4 : Burned
+Bit 3 : Poisoned
+Bits 0-2 : Sleep counter
+D000	D019	Type 1
+D001	D01A	Type 2
+D002	D01B	
+D003	D01C	Move #1 (First Slot)
+D004	D01D	Move #2 (Second Slot)
+D005	D01E	Move #3 (Third Slot)
+D006	D01F	Move #4 (Fourth Slot)
+D007	D020	Attack and Defense DVs
+D008	D021	Speed and Special DVs
+D009	D022	Level
+D00A-D00B	D023-D024	Max HP
+D00C-D00D	D025-D026	Attack
+D00E-D00F	D027-D028	Defense
+D010-D011	D029-D02A	Speed
+D012-D013	D02B-D02C	Special
+D014	D02D	PP (First Slot)
+D015	D02E	PP (Second Slot)
+D016	D02F	PP (Third Slot)
+D017	D030	PP (Fourth Slot)
+
+D057 - Type of battle
+
+D05A - Battle Type (Normal battle, Safari Zone, Old Man battle...)
+D05C - Is Gym Leader battle music playing?
+
+D05E - Critical Hit / OHKO Flag
+      01 - Critical Hit!
+      02 - One-hit KO!
+D05F - Hooked Pokémon Flag
+
+D062-D064 - Battle Status (Player)
+          D062:
+            bit 0 - Bide
+            bit 1 - Thrash / petal dance
+            bit 2 - Attacking multiple times (e.g. double kick)
+            bit 3 - Flinch
+            bit 4 - Charging up for attack
+            bit 5 - Using multi-turn move (e.g. wrap)
+            bit 6 - Invulnerable to normal attack (using fly/dig)
+            bit 7 - Confusion
+          D063:
+            bit 0 - X Accuracy effect
+            bit 1 - protected by "mist"
+            bit 2 - focus energy effect
+            bit 4 - has a substitute
+            bit 5 - need to recharge
+            bit 6 - rage
+            bit 7 - leech seeded
+          D064:
+            bit 0 - toxic
+            bit 1 - light screen
+            bit 2 - reflect
+            bit 3 - tranformed
+D065 - Stat to double (CPU)
+D066 - Stat to halve (CPU)
+D067-D069 - Battle Status (CPU) - Includes the "Transformed" status in D069 which makes the game regard the opponent as a Ditto.
+D06A - Multi-Hit Move counter (Player)
+D06B - Confusion counter (Player)
+D06C - Toxic counter (Player)
+D06D-D06E - Disable counter (Player)
+D06F - Multi-Hit Move counter (CPU)
+D070 - Confusion counter (CPU)
+D071 - Toxic counter (CPU)
+D072 - Disable counter (CPU)
+
+D0D8 - Amount of damage attack is about to do. Max possible damage may appear one frame before actual damage.
+
+Player
+D163 - # Pokémon In Party
+D164 - Pokémon 1
+D165 - Pokémon 2
+D166 - Pokémon 3
+D167 - Pokémon 4
+D168 - Pokémon 5
+D169 - Pokémon 6
+
+Pokemon 1
+D16B - Pokémon (Again)
+D16C-D16D - Current HP
+D16E - 'Level' (not the actual level, see the notes article)
+D16F - Status (Poisoned, Paralyzed, etc.)
+D170 - Type 1
+D171 - Type 2
+D172 - Catch rate/Held item (When traded to Generation II)
+D173 - Move 1
+D174 - Move 2
+D175 - Move 3
+D176 - Move 4
+D177-D178 - Trainer ID
+D179-D17B - Experience
+D17C-D17D - HP EV
+D17E-D17F - Attack EV
+D180-D181 - Defense EV
+D182-D183 - Speed EV
+D184-D185 - Special EV
+D186 - Attack/Defense IV
+D187 - Speed/Special IV
+D188 - PP Move 1
+D189 - PP Move 2
+D18A - PP Move 3
+D18B - PP Move 4
+D18C - Level (actual level)
+D18D-D18E - Max HP
+D18F-D190 - Attack
+D191-D192 - Defense
+D193-D194 - Speed
+D195-D196 - Special
+
+Pokemon 2
+D197 - Pokémon
+D198-D199 - Current HP
+D19A - 'Level' (not the actual level, see the notes article)
+D19B - Status
+D19C - Type 1
+D19D - Type 2
+D19E - Catch rate/Held item (When traded to Generation II)
+D19F - Move 1
+D1A0 - Move 2
+D1A1 - Move 3
+D1A2 - Move 4
+D1A3-D1A4 - Trainer ID
+D1A5-D1A7 - Experience 
+D1A8-D1A9 - HP EV
+D1AA-D1AB - Attack EV
+D1AC-D1AD - Defense EV
+D1AE-D1AF - Speed EV
+D1B0-D1B1 - Special EV
+D1B2 - Attack/Defense IV
+D1B3 - Speed/Special IV
+D1B4 - PP Move 1
+D1B5 - PP Move 2
+D1B6 - PP Move 3
+D1B7 - PP Move 4
+D1B8 - Level (actual)
+D1B9-D1BA - Max HP
+D1BB-D1BC - Attack
+D1BD-D1BE - Defense
+D1BF-D1C0 - Speed
+D1C1-D1C2 - Special
+
+Pokemon 3
+D1C3 - Pokémon
+D1C4-D1C5 - Current HP
+D1C6 - 'Level' (not the actual level, see the notes article)
+D1C7 - Status
+D1C8 - Type 1
+D1C9 - Type 2
+D1CA - Catch rate/Held item (When traded to Generation II)
+D1CB - Move 1
+D1CC - Move 2
+D1CD - Move 3
+D1CE - Move 4
+D1CF-D1D0 - Trainer ID
+D1D1-D1D3 - Experience
+D1D4-D1D5 - HP EV
+D1D6-D1D7 - Attack EV
+D1D8-D1D9 - Defense EV
+D1DA-D1DB - Speed EV
+D1DC-D1DD - Special EV
+D1DE - Attack/Defense IV
+D1DF - Speed/Special IV
+D1E0 - PP Move 1
+D1E1 - PP Move 2
+D1E2 - PP Move 3
+D1E3 - PP Move 4
+D1E4 - Level
+D1E5-D1E6 - Max HP
+D1E7-D1E8 - Attack
+D1E9-D1EA - Defense
+D1EB-D1EC - Speed
+D1ED-D1EE - Special
+
+Pokemon 4
+D1EF - Pokémon
+D1F0-D1F1 - Current HP
+D1F2 - 'Level' (not the actual level, see the notes article)
+D1F3 - Status
+D1F4 - Type 1
+D1F5 - Type 2
+D1F6 - Catch rate/Held item (When traded to Generation II)
+D1F7 - Move 1
+D1F8 - Move 2
+D1F9 - Move 3
+D1FA - Move 4
+D1FB-D1FC - Trainer ID
+D1FD-D1FF - Experience 
+D200-D201 - HP EV
+D202-D203 - Attack EV
+D204-D205 - Defense EV
+D206-D207 - Speed EV
+D208-D209 - Special EV
+D20A - Attack/Defense IV
+D20B - Speed/Special IV
+D20C - PP Move 1
+D20D - PP Move 2
+D20E - PP Move 3
+D20F - PP Move 4
+D210 - Level
+D211-D212 - Max HP
+D213-D214 - Attack
+D215-D216 - Defense
+D217-D218 - Speed
+D219-D21A - Special
+
+Pokemon 5
+D21B - Pokémon
+D21C-D21D - Current HP
+D21E - 'Level' (not the actual level, see the notes article)
+D21F - Status
+D220 - Type 1
+D221 - Type 2
+D222 - Catch rate/Held item (When traded to Generation II)
+D223 - Move 1
+D224 - Move 2
+D225 - Move 3
+D226 - Move 4
+D227-D228 - Trainer ID
+D229-D22B - Experience 
+D22C-D22D - HP EV
+D22E-D22F - Attack EV
+D230-D231 - Defense EV
+D232-D233 - Speed EV
+D234-D235 - Special EV
+D236 - Attack/Defense IV
+D237 - Speed/Special IV
+D238 - PP Move 1
+D239 - PP Move 2
+D23A - PP Move 3
+D23B - PP Move 4
+D23C - Level
+D23D-D23E - Max HP
+D23F-D240 - Attack
+D241-D242 - Defense
+D243-D244 - Speed
+D245-D246 - Special
+
+Pokemon 6
+D247 - Pokémon
+D248-D249 - Current HP
+D24A - 'Level' (not the actual level, see the notes article)
+D24B - Status
+D24C - Type 1
+D24D - Type 2
+D24E - Catch rate/Held item (When traded to Generation II)
+D24F - Move 1
+D250 - Move 2
+D251 - Move 3
+D252 - Move 4
+D253-D254 - Trainer ID
+D255-D257 - Experience 
+D258-D259 - HP EV
+D25A-D25B - Attack EV
+D25C-D25D - Defense EV
+D25E-D25F - Speed EV
+D260-D261 - Special EV
+D262 - Attack/Defense IV
+D263 - Speed/Special IV
+D264 - PP Move 1
+D265 - PP Move 2
+D266 - PP Move 3
+D267 - PP Move 4
+D268 - Level
+D269-D26A - Max HP
+D26B-D26C - Attack
+D26D-D26E - Defense
+D26F-D270 - Speed
+D271-D272 - Special
+
+Items
+D31D - Total Items
+D31E - Item 1
+D31F - Item 1 Quantity
+D320 - Item 2
+D321 - Item 2 Quantity
+D322 - Item 3
+D323 - Item 3 Quantity
+D324 - Item 4
+D325 - Item 4 Quantity
+D326 - Item 5
+D327 - Item 5 Quantity
+D328 - Item 6
+D329 - Item 6 Quantity
+D32A - Item 7
+D32B - Item 7 Quantity
+D32C - Item 8
+D32D - Item 8 Quantity
+D32E - Item 9
+D32F - Item 9 Quantity
+D330 - Item 10
+D331 - Item 10 Quantity
+D332 - Item 11
+D333 - Item 11 Quantity
+D334 - Item 12
+D335 - Item 12 Quantity
+D336 - Item 13
+D337 - Item 13 Quantity
+D338 - Item 14
+D339 - Item 14 Quantity
+D33A - Item 15
+D33B - Item 15 Quantity
+D33C - Item 16
+D33D - Item 16 Quantity
+D33E - Item 17
+D33F - Item 17 Quantity
+D340 - Item 18
+D341 - Item 18 Quantity
+D342 - Item 19
+D343 - Item 19 Quantity
+D344 - Item 20
+D345 - Item 20 Quantity
+
+Money
+D347 - Money Byte 1
+D348 - Money Byte 2
+D349 - Money Byte 3
+
+Miscellaneous
+D356 = Badges (Binary Switches)
+D35E = Current Map Number
+D35F-D360 = Event Displacement (view Notes, for more info)
+D361 - 1 byte integer = Current Player Y-Position
+D362 - 1 byte integer = Current Player X-Position
+D363 = Current Player Y-Position (Current Block)
+D364 = Current Player X-Position (Current Block)
+
+Wild Pokemon
+D887 - Wild Pokémon encounter rates
+
+Common Battles:
+
+D888 - Level of Encounter 1
+D889 - Pokémon Data Value 1
+D88A - Level of Encounter 2
+D88B - Pokémon Data Value 2
+D88C - Level of Encounter 3
+D88D - Pokémon Data Value 3
+D88E - Level of Encounter 4
+D88F - Pokémon Data Value 4
+Uncommon Battles:
+
+D890 - Level of Encounter 1
+D891 - Pokémon Data Value 1
+D892 - Level of Encounter 2
+D893 - Pokémon Data Value 2
+D894 - Level of Encounter 3
+D895 - Pokémon Data Value 3
+D896 - Level of Encounter 4
+D897 - Pokémon Data Value 4
+Rare Battles:
+
+D898 - Level of Encounter 1
+D899 - Pokémon Data Value 1
+D89A - Level of Encounter 2
+D89B - Pokémon Data Value 2
+
+D89C - Total enemy Pokémon
+D89D - Pokémon 1
+D89E - Pokémon 2
+D89F - Pokémon 3
+D8A0 - Pokémon 4
+D8A1 - Pokémon 5
+D8A2 - Pokémon 6
+D8A3 - End of list
+Pokémon 1
+
+D8A4 - Pokémon
+D8A5-D8A6 - Current HP
+D8A7 -
+D8A8 - Status
+D8A9 - Type 1
+D8AA - Type 2
+D8AB -
+D8AC - Move 1
+D8AD - Move 2
+D8AE - Move 3
+D8AF - Move 4
+D8B0-D8B1 - Trainer ID
+D8B2-D8B4 - Experience
+D8B5-D8B6 - HP EV
+D8B7-D8B8 - Attack EV
+D8B9-D8BA - Defense EV
+D8BB-D8BC - Speed EV
+D8BD-D8BE - Special EV
+D8BF - Attack/Defense IV
+D8C0 - Speed/Special IV
+D8C1 - PP Move 1
+D8C2 - PP Move 2
+D8C3 - PP Move 3
+D8C4 - PP Move 4
+D8C5 - Level
+D8C6-D8C7 - Max HP
+D8C8-D8C9 - Attack
+D8CA-D8CB - Defense
+D8CC-D8CD - Speed
+D8CE-D8CF - Special
+Pokémon 2
+
+D8D0 - Pokémon
+D8D1-D8D2 - Current HP
+D8D3 -
+D8D4 - Status
+D8D5 - Type 1
+D8D6 - Type 2
+D8D7 -
+D8D8 - Move 1
+D8D9 - Move 2
+D8DA - Move 3
+D8DB - Move 4
+D8DC-D8DD - Trainer ID
+D8DE-D8E0 - Experience
+D8E1-D8E2 - HP EV
+D8E3-D8E4 - Attack EV
+D8E5-D8E6 - Defense EV
+D8E7-D8E8 - Speed EV
+D8E9-D8EA - Special EV
+D8EB - Attack/Defense IV
+D8EC - Speed/Special IV
+D8ED - PP Move 1
+D8EE - PP Move 2
+D8EF - PP Move 3
+D8F0 - PP Move 4
+D8F1 - Level
+D8F2-D8F3 - Max HP
+D8F4-D8F5 - Attack
+D8F6-D8F7 - Defense
+D8F8-D8F9 - Speed
+D8FA-D8FB - Special
+Pokémon 3
+
+D8FC - Pokémon
+D8FD-D8FE - Current HP
+D8FF -
+D900 - Status
+D901 - Type 1
+D902 - Type 2
+D903 -
+D904 - Move 1
+D905 - Move 2
+D906 - Move 3
+D907 - Move 4
+D908-D909 - Trainer ID
+D90A-D90C - Experience
+D90D-D90E - HP EV
+D90F-D910 - Attack EV
+D911-D912 - Defense EV
+D913-D914 - Speed EV
+D915-D916 - Special EV
+D917 - Attack/Defense IV
+D918 - Speed/Special IV
+D919 - PP Move 1
+D91A - PP Move 2
+D91B - PP Move 3
+D91C - PP Move 4
+D91D - Level
+D91E-D91F - Max HP
+D920-D921 - Attack
+D922-D923 - Defense
+D924-D925 - Speed
+D926-D927 - Special
+Pokémon 4
+
+D928 - Pokémon
+D929-D92A - Current HP
+D92B -
+D92C - Status
+D92D - Type 1
+D92E - Type 2
+D92F -
+D930 - Move 1
+D931 - Move 2
+D932 - Move 3
+D933 - Move 4
+D934-D935 - Trainer ID
+D936-D938 - Experience
+D939-D93A - HP EV
+D93B-D93C - Attack EV
+D93D-D93E - Defense EV
+D93F-D940 - Speed EV
+D941-D942 - Special EV
+D943 - Attack/Defense IV
+D944 - Speed/Special IV
+D945 - PP Move 1
+D946 - PP Move 2
+D947 - PP Move 3
+D948 - PP Move 4
+D949 - Level
+D94A-D94B - Max HP
+D94C-D94D - Attack
+D94E-D94F - Defense
+D950-D951 - Speed
+D952-D953 - Special
+Pokémon 5
+
+D954 - Pokémon
+D955-D956 - Current HP
+D957 -
+D958 - Status
+D959 - Type 1
+D95A - Type 2
+D95B -
+D95C - Move 1
+D95D - Move 2
+D95E - Move 3
+D95F - Move 4
+D960-D961 - Trainer ID
+D962-D964 - Experience
+D965-D966 - HP EV
+D967-D968 - Attack EV
+D969-D96A - Defense EV
+D96B-D96C - Speed EV
+D96D-D96E - Special EV
+D96F - Attack/Defense IV
+D970 - Speed/Special IV
+D971 - PP Move 1
+D972 - PP Move 2
+D973 - PP Move 3
+D974 - PP Move 4
+D975 - Level
+D976-D977 - Max HP
+D978-D979 - Attack
+D97A-D97B - Defense
+D97C-D97D - Speed
+D97E-D97F - Special
+Pokémon 6
+
+D980 - Pokémon
+D981-D982 - Current HP
+D983 -
+D984 - Status
+D985 - Type 1
+D986 - Type 2
+D987 -
+D988 - Move 1
+D989 - Move 2
+D98A - Move 3
+D98B - Move 4
+D98C-D98D - Trainer ID
+D98E-D990 - Experience
+D991-D992 - HP EV
+D993-D994 - Attack EV
+D995-D996 - Defense EV
+D997-D998 - Speed EV
+D999-D99A - Special EV
+D99B - Attack/Defense IV
+D99C - Speed/Special IV
+D99D - PP Move 1
+D99E - PP Move 2
+D99F - PP Move 3
+D9A0 - PP Move 4
+D9A1 - Level
+D9A2-D9A3 - Max HP
+D9A4-D9A5 - Attack
+D9A6-D9A7 - Defense
+D9A8-D9A9 - Speed
+D9AA-D9AB - Special
