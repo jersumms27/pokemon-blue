@@ -56,8 +56,8 @@ class ExplorationTracker():
             else:
                 self.stuck_steps += 1
 
-        if self.visited[location] > 15 or self.stuck_steps > self.max_stuck:
-            return -1.0, True
+        if self.visited[location] > 10 or self.stuck_steps > self.max_stuck:
+            return -1.0 * weight, True
         ######
         return weight / max(1, self.visited[location]), False
     

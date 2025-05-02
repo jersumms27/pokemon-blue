@@ -12,10 +12,10 @@ from matplotlib import pyplot as plt
 from collections import defaultdict
 
 state_size: int = 65
-hidden_sizes: list[int] = [128, 256, 256, 128, state_size, 10] # sizes of hidden layers
+hidden_sizes: list[int] = [256, 256, 128] # sizes of hidden layers
 num_actions: int = 6 # A, B, --SELECT, START,-- RIGHT, LEFT, UP, DOWN
-max_epochs: int = 1 # number of iterations before training ends
-max_actions_start: int = 50
+max_epochs: int = 30 # number of iterations before training ends
+max_actions_start: int = 500
 max_actions_incr: int = 0
 
 device: torch.device = torch.device('cuda')
@@ -26,14 +26,14 @@ epsilon_path: str = 'C:/Users/jerem/Pokemon Blue DQN/model/epsilon.txt'
 reward_path: str = 'C:/Users/jerem/Pokemon Blue DQN/data/reward_plot.png'
 component_path: str = 'C:/Users/jerem/Pokemon Blue DQN/data/component_plot.png'
 
-lr: float = 1e-3 # learning rate
+lr: float = 1e-4 # learning rate
 start_training: int = 128
 gamma: float = 0.85 # discount factor
 batch_size: int = 128
 epsilon: float = 1.0
-epsilon_decay: float = 0.9995
+epsilon_decay: float = 0.999
 min_epsilon: float = 0.025
-target_update: int = 15 # how often to update target network to match q network
+target_update: int = 1000 # how often to update target network to match q network
 learn_freq: int = 5 # how often to train q network
 explore_weight: float = 0.20
 

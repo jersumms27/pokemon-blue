@@ -131,8 +131,8 @@ class Transition:
 
         # clamping player hp to only benefit healing, not penalize damage
         self.reward_components = {
-            'player_hp': 0.15 * max(0.0, player_hp_diff),
-            'enemy_hp': max(0.0, -0.15 * enemy_hp_diff),
+            'player_hp': 0.25 * max(0.0, player_hp_diff),
+            'enemy_hp': max(0.0, -0.25 * enemy_hp_diff),
             'level': 0.20 * level_diff,
             'exp': 0.20 * max(0.0, exp_diff),
             'party': 0.15 * party_diff,
