@@ -25,12 +25,6 @@ local function sleep_ms(ms)
 end
 
 local memory_locations = {}
-local function add_address_range(start, stop, step)
-    step = step or 1
-    for addr = start, stop, step do
-        table.insert(memory_locations, addr)
-    end
-end
 
 table.insert(memory_locations, 0xD014) -- pokemon #1 number
 table.insert(memory_locations, 0xD015) -- pokemon #1 health (byte 1)
