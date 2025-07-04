@@ -19,20 +19,20 @@ class TrainConfig:
     state_size: int = 213
     hidden_sizes: list[int] = field(default_factory=lambda: [256, 256, 128]) # sizes of hidden layers
     num_actions: int = 6 # A, B, --SELECT, START,-- RIGHT, LEFT, UP, DOWN
-    max_epochs: int = 1
-    max_episodes: int = 3 # number of iterations before training ends
-    max_actions_start: int = 200
-    max_actions_incr: int = 0
+    max_epochs: int = 15
+    max_episodes: int = 15 # number of iterations before training ends
+    max_actions_start: int = 1000
+    max_actions_incr: int = 25
 
     device: torch.device = torch.device('cuda')
     max_mem: int = 10000 # max number of transitions stored
 
-    lr: float = 1e-4 # learning rate
+    lr: float = 1e-3 # learning rate
     start_training: int = 128
-    gamma: float = 0.85 # discount factor
+    gamma: float = 0.99 # discount factor
     batch_size: int = 128
     epsilon_init: float = 1.0
-    epsilon_decay: float = 0.999
+    epsilon_decay: float = 0.995
     min_epsilon: float = 0.05
     target_update: int = 1000 # how often to update target network to match q network
     learn_freq: int = 5 # how often to train q network

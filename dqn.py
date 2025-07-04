@@ -1,3 +1,5 @@
+from typing import Union
+
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
@@ -7,33 +9,37 @@ class DQN(nn.Module):
                  state_size: int,
                  num_actions: int,
                  hidden_sizes: list[int] = [],
-                 dropout: float = 0.20) -> None:
+                 dropout: float = 0.15) -> None:
         super().__init__()
 
         if not hidden_sizes:
             hidden_sizes = [state_size]
         
-        self.input_layer: nn.Linear = nn.Linear(state_size, hidden_sizes[0])
-        self.hidden_layers: nn.ModuleList = nn.ModuleList([nn.Linear(hidden_sizes[i], hidden_sizes[i+1]) for i in range(len(hidden_sizes) - 1)])
-        self.output_layer: nn.Linear = nn.Linear(hidden_sizes[-1], num_actions)
+        layers: list[Union[nn.Linear, nn.BatchNorm1d, nn.ReLU, nn.Dropout]]  = []
+        prev_size: int = state_size
+        for i, hidden_size in enumerate(hidden_sizes):
+            layers.append(nn.Linear(prev_size, hidden_size))
+            layers.append(nn.BatchNorm1d(hidden_size))
+            layers.append(nn.ReLU())
 
-        self.dropout: nn.Dropout = nn.Dropout(dropout)
+            if i < len(hidden_sizes) - 1:
+                layers.append(nn.Dropout(dropout))
+            prev_size = hidden_size
+            
+        layers.append(nn.Linear(prev_size, num_actions))
+
+        self.network: nn.Sequential = nn.Sequential(*layers)
+
+        self._init_weights()
     
 
     def forward(self,
                 state: Tensor) -> Tensor:
-        output: Tensor = F.relu(self.input_layer(state))
-        output = self.dropout(output)
+        return self.network(state)
+    
 
-        for i, hidden_layer in enumerate(self.hidden_layers):
-            residual: Tensor = output
-            output = F.relu(hidden_layer(output))
-
-            if i < len(self.hidden_layers) - 1:
-                output = self.dropout(output)
-
-            if residual.shape == output.shape:
-                output += residual
-        
-        q_values: Tensor = self.output_layer(output)
-        return q_values
+    def _init_weights(self) -> None:
+        for module in self.modules():
+            if isinstance(module, nn.Linear):
+                nn.init.xavier_uniform_(module.weight)
+                nn.init.constant_(module.bias, 0)

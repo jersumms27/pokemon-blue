@@ -361,13 +361,13 @@ class Transition:
         enemy_hp_weight: float = -0.10
 
         level_weight: float = 0.20
-        exp_weight: float = 0.15
+        exp_weight: float = 0.10
         party_weight: float = 0.10
         money_weight: float = 0.10
-        battle_weight: float = 0.15
+        battle_weight: float = 0.20
 
-        revisit_weight: float = -0.10
-        win_weight: float = 0.60
+        revisit_weight: float = -0.30
+        win_weight: float = 0.70
 
         reward: float = (
             player_hp_weight * player_hp_norm +
