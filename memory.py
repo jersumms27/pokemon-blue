@@ -1,7 +1,6 @@
 import random
-from collections import defaultdict
 
-from transition import State, Transition
+from transition import Transition
 
 class ExperienceReplay():
     def __init__(self,

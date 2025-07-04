@@ -23,11 +23,14 @@ class DQN(nn.Module):
     def forward(self,
                 state: Tensor) -> Tensor:
         output: Tensor = F.relu(self.input_layer(state))
+        output = self.dropout(output)
 
-        for hidden_layer in self.hidden_layers:
+        for i, hidden_layer in enumerate(self.hidden_layers):
             residual: Tensor = output
             output = F.relu(hidden_layer(output))
-            output = self.dropout(output)
+
+            if i < len(self.hidden_layers) - 1:
+                output = self.dropout(output)
 
             if residual.shape == output.shape:
                 output += residual

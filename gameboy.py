@@ -32,7 +32,7 @@ def write_action(action: int) -> None:
             time.sleep(0.001)
 
 
-def read_state(num_actions: int) -> State:
+def read_state(num_actions: int, prev_state: State | None = None) -> State:
     # wait until Lua has written state
     while not os.path.exists(state_ready_path):
         time.sleep(0.001)
@@ -56,8 +56,9 @@ def read_state(num_actions: int) -> State:
                 break
             except PermissionError:
                 time.sleep(0.001)
-    
-    return State(state, num_actions)
+    if prev_state is None:
+        return State(state, num_actions)
+    return State(state, num_actions, prev_state.visited)
 
 
 def reset_emulator() -> None:

@@ -1,81 +1,279 @@
 from typing import Iterator, Union
 
 class State:
-    memory_map: dict[str, int] = {
-        'player pokemon number': 0,
-        'player pokemon hp 1': 1,
-        'player pokemon hp 2': 2,
-        'player pokemon max hp 1': 3,
-        'player pokemon max hp 2': 4,
-        'player pokemon level': 5,
-        'player pokemon exp 1': 6,
-        'player pokemon exp 2': 7,
-        'player pokemon exp 3': 8,
-        'player pokemon type 1': 9,
-        'player pokemon type 2': 10,
-        'player pokemon move 1': 11,
-        'player pokemon move 2': 12,
-        'player pokemon move 3': 13,
-        'player pokemon move 4': 14,
-        'player pokemon move 1 pp': 15,
-        'player pokemon move 2 pp': 16,
-        'player pokemon move 3 pp': 17,
-        'player pokemon move 4 pp': 18,
-        'player selected move': 19,
-        'player pokemon attack mod': 20,
-        'player pokemon defense mod': 21,
-        'player pokemon speed mod': 22,
-        'player pokemon special mod': 23,
-        'player pokemon accuracy mod': 24,
-        'player pokemon evasion mod': 25,
-        'player pokemon status': 26,
-        'enemy pokemon number': 27,
-        'enemy pokemon hp 1': 28,
-        'enemy pokemon hp 2': 29,
-        'enemy pokemon max hp 1': 30,
-        'enemy pokemon max hp 2': 21,
-        'enemy selected move': 32,
-        'enemy pokemon defense mod': 33,
-        'enemy pokemon speed mod': 34,
-        'enemy pokemon special mod': 35,
-        'enemy pokemon accuracy mod': 36,
-        'enemy pokemon evasion mod': 37,
-        'enemy pokemon status': 38,
-        'battle type': 39,
-        'number of turns': 40,
-        'number of pokemon in party': 41,
-        'player pokemon 2 hp 1': 42,
-        'player pokemon 2 hp 2': 43,
-        'player pokemon 3 hp 1': 44,
-        'player pokemon 3 hp 2': 45,
-        'player pokemon 4 hp 1': 46,
-        'player pokemon 4 hp 2': 47,
-        'player pokemon 5 hp 1': 48,
-        'player pokemon 5 hp 2': 49,
-        'player pokemon 6 hp 1': 50,
-        'player pokemon 6 hp 2': 51,
-        'money 1': 52,
-        'money 2': 53,
-        'money 3': 54,
-        'number of items': 55,
-        'number of badges': 56,
-        'map number': 57,
-        'player x-position': 58,
-        'player y-position': 59,
-        'cursor x-position': 60,
-        'cursor y-position': 61,
-        'selected menu item': 62,
-        'menu type': 63,
-        'num actions': 64
-    }
+    memory_list: list[str] = [
+        # MAP AND PLAYER LOCATION
+        'current_map_number',
+        'player_x_position', 
+        'player_y_position',
+        'current_player_y_position_current_block',
+        'current_player_x_position_current_block',
+        
+        # POKEMON #1 (ACTIVE POKEMON) - COMPLETE DATA
+        'pokemon_1_number',
+        'pokemon_1_current_hp_1',
+        'pokemon_1_current_hp_2',
+        'pokemon_1_max_hp_1',
+        'pokemon_1_max_hp_2',
+        'pokemon_1_level',
+        'pokemon_1_exp_1',
+        'pokemon_1_exp_2',
+        'pokemon_1_exp_3',
+        'pokemon_1_type_1',
+        'pokemon_1_type_2',
+        'pokemon_1_move_1',
+        'pokemon_1_move_2',
+        'pokemon_1_move_3',
+        'pokemon_1_move_4',
+        'pokemon_1_move_1_pp',
+        'pokemon_1_move_2_pp',
+        'pokemon_1_move_3_pp',
+        'pokemon_1_move_4_pp',
+        'pokemon_1_status',
+        'pokemon_1_attack_1',
+        'pokemon_1_attack_2',
+        'pokemon_1_defense_1',
+        'pokemon_1_defense_2',
+        'pokemon_1_speed_1',
+        'pokemon_1_speed_2',
+        'pokemon_1_special_1',
+        'pokemon_1_special_2',
+        
+        # POKEMON #2 - COMPLETE DATA
+        'pokemon_2_number',
+        'pokemon_2_current_hp_1',
+        'pokemon_2_current_hp_2',
+        'pokemon_2_max_hp_1',
+        'pokemon_2_max_hp_2',
+        'pokemon_2_level',
+        'pokemon_2_exp_1',
+        'pokemon_2_exp_2',
+        'pokemon_2_exp_3',
+        'pokemon_2_type_1',
+        'pokemon_2_type_2',
+        'pokemon_2_move_1',
+        'pokemon_2_move_2',
+        'pokemon_2_move_3',
+        'pokemon_2_move_4',
+        'pokemon_2_move_1_pp',
+        'pokemon_2_move_2_pp',
+        'pokemon_2_move_3_pp',
+        'pokemon_2_move_4_pp',
+        'pokemon_2_status',
+        
+        # POKEMON #3 - COMPLETE DATA
+        'pokemon_3_number',
+        'pokemon_3_current_hp_1',
+        'pokemon_3_current_hp_2',
+        'pokemon_3_max_hp_1',
+        'pokemon_3_max_hp_2',
+        'pokemon_3_level',
+        'pokemon_3_exp_1',
+        'pokemon_3_exp_2',
+        'pokemon_3_exp_3',
+        'pokemon_3_type_1',
+        'pokemon_3_type_2',
+        'pokemon_3_move_1',
+        'pokemon_3_move_2',
+        'pokemon_3_move_3',
+        'pokemon_3_move_4',
+        'pokemon_3_move_1_pp',
+        'pokemon_3_move_2_pp',
+        'pokemon_3_move_3_pp',
+        'pokemon_3_move_4_pp',
+        'pokemon_3_status',
+        
+        # POKEMON #4 - COMPLETE DATA
+        'pokemon_4_number',
+        'pokemon_4_current_hp_1',
+        'pokemon_4_current_hp_2',
+        'pokemon_4_max_hp_1',
+        'pokemon_4_max_hp_2',
+        'pokemon_4_level',
+        'pokemon_4_exp_1',
+        'pokemon_4_exp_2',
+        'pokemon_4_exp_3',
+        'pokemon_4_type_1',
+        'pokemon_4_type_2',
+        'pokemon_4_move_1',
+        'pokemon_4_move_2',
+        'pokemon_4_move_3',
+        'pokemon_4_move_4',
+        'pokemon_4_move_1_pp',
+        'pokemon_4_move_2_pp',
+        'pokemon_4_move_3_pp',
+        'pokemon_4_move_4_pp',
+        'pokemon_4_status',
+        
+        # POKEMON #5 - COMPLETE DATA
+        'pokemon_5_number',
+        'pokemon_5_current_hp_1',
+        'pokemon_5_current_hp_2',
+        'pokemon_5_max_hp_1',
+        'pokemon_5_max_hp_2',
+        'pokemon_5_level',
+        'pokemon_5_exp_1',
+        'pokemon_5_exp_2',
+        'pokemon_5_exp_3',
+        'pokemon_5_type_1',
+        'pokemon_5_type_2',
+        'pokemon_5_move_1',
+        'pokemon_5_move_2',
+        'pokemon_5_move_3',
+        'pokemon_5_move_4',
+        'pokemon_5_move_1_pp',
+        'pokemon_5_move_2_pp',
+        'pokemon_5_move_3_pp',
+        'pokemon_5_move_4_pp',
+        'pokemon_5_status',
+        
+        # POKEMON #6 - COMPLETE DATA
+        'pokemon_6_number',
+        'pokemon_6_current_hp_1',
+        'pokemon_6_current_hp_2',
+        'pokemon_6_max_hp_1',
+        'pokemon_6_max_hp_2',
+        'pokemon_6_level',
+        'pokemon_6_exp_1',
+        'pokemon_6_exp_2',
+        'pokemon_6_exp_3',
+        'pokemon_6_type_1',
+        'pokemon_6_type_2',
+        'pokemon_6_move_1',
+        'pokemon_6_move_2',
+        'pokemon_6_move_3',
+        'pokemon_6_move_4',
+        'pokemon_6_move_1_pp',
+        'pokemon_6_move_2_pp',
+        'pokemon_6_move_3_pp',
+        'pokemon_6_move_4_pp',
+        'pokemon_6_status',
+        
+        # PARTY INFORMATION
+        'number_of_pokemon_in_party',
+        
+        # ENEMY POKEMON - COMPLETE DATA
+        'enemy_pokemon_internal_id',
+        'enemy_pokemon_current_hp_1',
+        'enemy_pokemon_current_hp_2',
+        'enemy_pokemon_max_hp_1',
+        'enemy_pokemon_max_hp_2',
+        'enemy_pokemon_level',
+        'enemy_pokemon_type_1',
+        'enemy_pokemon_type_2',
+        'enemy_pokemon_move_1',
+        'enemy_pokemon_move_2',
+        'enemy_pokemon_move_3',
+        'enemy_pokemon_move_4',
+        'enemy_pokemon_pp_first_slot',
+        'enemy_pokemon_pp_second_slot',
+        'enemy_pokemon_pp_third_slot',
+        'enemy_pokemon_pp_fourth_slot',
+        'enemy_pokemon_status',
+        'enemy_pokemon_attack_1',
+        'enemy_pokemon_attack_2',
+        'enemy_pokemon_defense_1',
+        'enemy_pokemon_defense_2',
+        'enemy_pokemon_speed_1',
+        'enemy_pokemon_speed_2',
+        'enemy_pokemon_special_1',
+        'enemy_pokemon_special_2',
+        
+        # STAT MODIFIERS
+        'player_pokemon_attack_modifier',
+        'player_pokemon_defense_modifier',
+        'player_pokemon_speed_modifier',
+        'player_pokemon_special_modifier',
+        'player_pokemon_accuracy_modifier',
+        'player_pokemon_evasion_modifier',
+        'enemy_pokemon_attack_modifier',
+        'enemy_pokemon_defense_modifier',
+        'enemy_pokemon_speed_modifier',
+        'enemy_pokemon_special_modifier',
+        'enemy_pokemon_accuracy_modifier',
+        'enemy_pokemon_evasion_modifier',
+        
+        # BATTLE INFORMATION
+        'type_of_battle',
+        'battle_type',
+        'number_of_turns_in_current_battle',
+        'player_selected_move',
+        'enemy_selected_move',
+        'move_menu_type',
+        'critical_hit_ohko_flag',
+        'amount_of_damage_attack_is_about_to_do',
+        
+        # BATTLE STATUS FLAGS (PLAYER)
+        'battle_status_player_byte_1',
+        'battle_status_player_byte_2',
+        'battle_status_player_byte_3',
+        
+        # BATTLE STATUS FLAGS (ENEMY)
+        'battle_status_enemy_byte_1',
+        'battle_status_enemy_byte_2',
+        'battle_status_enemy_byte_3',
+        
+        # BATTLE COUNTERS
+        'multi_hit_move_counter_player',
+        'confusion_counter_player',
+        'toxic_counter_player',
+        'multi_hit_move_counter_enemy',
+        'confusion_counter_enemy',
+        'toxic_counter_enemy',
+        
+        # MONEY
+        'money_1',
+        'money_2',
+        'money_3',
+        
+        # ITEMS
+        'total_items',
+        'item_1',
+        'item_1_quantity',
+        'item_2',
+        'item_2_quantity',
+        'item_3',
+        'item_3_quantity',
+        'item_4',
+        'item_4_quantity',
+        'item_5',
+        'item_5_quantity',
+        
+        # BADGES
+        'number_of_badges',
+        
+        # CURSOR AND MENU
+        'cursor_x_position',
+        'cursor_y_position',
+        'selected_menu_item',
+        'last_position_cursor_item_screen',
+        'last_position_cursor_start_battle_menu',
+        'item_highlighted_with_select',
+        
+        # FRAME COUNT (added by lua script)
+        'total_frames'
+    ]
 
+    memory_map: dict[str, int]
 
-    def __init__(self, state: str, num_actions) -> None:
+    def __init__(self, state: str, num_actions: int, visited: set[tuple[int, int, int]] | None = None) -> None:
         parts: list[str] = state.strip().split(',')
 
         self.memory: tuple[float, ...] = tuple(
             [int(x) for x in parts[:-1]] + [float(num_actions)]
         )
+
+        self.location: tuple[int, int, int] = (
+            int(self.__getitem__('current_map_number')),
+            int(self.__getitem__('player_x_position')) // 2,
+            int(self.__getitem__('player_y_position')) // 2
+        )
+
+        if visited is None:
+            self.visited: set[tuple[int, int, int]] = set([self.location])
+        else:
+            self.visited = visited.copy()
+            self.visited.add(self.location)
 
 
     def __getitem__(self, key: str) -> float:
@@ -84,6 +282,9 @@ class State:
 
     def __str__(self) -> str:
         return ' '.join(str(key) + ':' + str(val) for key, val in zip(self.memory_map.keys(), self.memory))
+    
+
+State.memory_map = {State.memory_list[i]: i for i in range(len(State.memory_list))}
     
 
 class Transition:
@@ -100,6 +301,32 @@ class Transition:
 
 
     def calculate_reward(self) -> float:
+        def safe_divide(numerator: float, denominator: float) -> float:
+            return numerator / denominator if denominator != 0 else 0.0
+        
+
+        def get_diff(keys: list[str]) -> float:
+            return (sum([self.next_state[keys[i]] * (256 ** i) for i in range(len(keys))]) -
+                    sum([self.state[keys[i]] * (256 ** i) for i in range(len(keys))]))
+        
+
+        battle_started: bool = self.next_state['battle_type'] != 0 and self.state['battle_type'] == 0
+        battle_won: bool = self.state['enemy_pokemon_current_hp_1'] + 256 * self.state['enemy_pokemon_current_hp_2'] > 0\
+            and self.next_state['enemy_pokemon_current_hp_2'] + 256 * self.next_state['enemy_pokemon_current_hp_1'] == 0
+        
+        whited_out: bool = all(self.next_state[f'pokemon_{i}_current_hp_1'] + 256 * self.next_state[f'pokemon_{i}_current_hp_2'] == 0 for i in range(1, 7))
+        revisited_chunk: bool = self.next_state.location in self.state.visited
+
+        player_hp_diff = safe_divide(sum([get_diff([f'pokemon_{i}_current_hp_2', f'pokemon_{i}_current_hp_1']) for i in range(1, 7)]),
+                                     sum([self.next_state[f'pokemon_{i}_max_hp_2'] + 256 * self.next_state[f'pokemon_{i}_max_hp_1'] for i in range(1, 7)]))
+        enemy_hp_diff: float = safe_divide(get_diff(['enemy_pokemon_current_hp_2', 'enemy_pokemon_current_hp_1']),
+                                        self.next_state['enemy_pokemon_max_hp_2'] + 256 * self.next_state['enemy_pokemon_max_hp_1'])
+        level_diff: float = get_diff(['pokemon_1_level'])
+        exp_diff: float = get_diff(['pokemon_1_exp_3', 'pokemon_1_exp_2', 'pokemon_1_exp_1'])
+        party_diff: float = get_diff(['number_of_pokemon_in_party'])
+        money_diff: float = get_diff(['money_3', 'money_2', 'money_1'])
+        battle_diff: float = float(battle_started)
+
         return 0.0
     
 

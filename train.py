@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import random
 
 import torch.nn
@@ -11,13 +11,17 @@ from memory import ExperienceReplay
 from transition import State, Transition
 import gameboy
 
+model_path: str = 'C:/Users/jerem/Pokemon Blue DQN/model/dqn_params.pth'
+epsilon_path: str = 'C:/Users/jerem/Pokemon Blue DQN/model/epsilon.txt'
+
 @dataclass
 class TrainConfig:
-    state_size: int = 65
-    hidden_sizes: list[int] = [256, 256, 128] # sizes of hidden layers
+    state_size: int = 213
+    hidden_sizes: list[int] = field(default_factory=lambda: [256, 256, 128]) # sizes of hidden layers
     num_actions: int = 6 # A, B, --SELECT, START,-- RIGHT, LEFT, UP, DOWN
-    max_epochs: int = 30 # number of iterations before training ends
-    max_actions_start: int = 500
+    max_epochs: int = 1
+    max_episodes: int = 3 # number of iterations before training ends
+    max_actions_start: int = 200
     max_actions_incr: int = 0
 
     device: torch.device = torch.device('cuda')
@@ -27,16 +31,41 @@ class TrainConfig:
     start_training: int = 128
     gamma: float = 0.85 # discount factor
     batch_size: int = 128
-    epsilon: float = 1.0
+    epsilon_init: float = 1.0
     epsilon_decay: float = 0.999
-    min_epsilon: float = 0.025
+    min_epsilon: float = 0.05
     target_update: int = 1000 # how often to update target network to match q network
     learn_freq: int = 5 # how often to train q network
-    explore_weight: float = 0.20
+
+
+def train(cfg: TrainConfig) -> None:
+    q_net: DQN
+    target_net: DQN
+    optim: Optimizer
+    memory: ExperienceReplay
+    q_net, target_net, optim, memory = setup_training(cfg)
+
+    epsilon: float
+    try:
+        with open(epsilon_path, 'r') as f:
+            epsilon = float(f.read())
+    except:
+        epsilon = cfg.epsilon_init
+    
+    for epoch in range(cfg.max_epochs):
+        epsilon = run_epoch(cfg, q_net, target_net, optim, memory, epsilon)
+
+        save_params(q_net, epsilon)
+
 
 
 def setup_training(cfg: TrainConfig) -> tuple[DQN, DQN, Optimizer, ExperienceReplay]:
     q_net: DQN = DQN(cfg.state_size, cfg.num_actions).to(cfg.device)
+    try:
+        q_net.load_state_dict(torch.load(model_path, weights_only=True))
+    except:
+        pass
+
     target_net: DQN = DQN(cfg.state_size, cfg.num_actions).to(cfg.device)
     target_net.load_state_dict(q_net.state_dict())
 
@@ -51,55 +80,68 @@ def run_epoch(cfg: TrainConfig,
               q_net: DQN,
               target_net: DQN,
               optim: Optimizer,
-              memory: ExperienceReplay) -> None:
-    for epoch in range(cfg.max_epochs):
+              memory: ExperienceReplay,
+              epsilon: float) -> float:
+    global_step: int = 0
+
+    for episode in range(cfg.max_episodes):
         gameboy.reset_emulator()
-        run_episode(cfg, q_net, target_net, optim, memory)
+        global_step = run_episode(cfg, q_net, target_net, optim, memory, episode, epsilon, global_step)
+        epsilon = max(cfg.min_epsilon, epsilon * cfg.epsilon_decay)
+    
+    return epsilon
 
 
 def run_episode(cfg: TrainConfig,
                 q_net: DQN,
                 target_net: DQN,
                 optim: Optimizer,
-                memory: ExperienceReplay) -> None:
-    actions_taken: int = 0
+                memory: ExperienceReplay,
+                episode: int,
+                epsilon: float,
+                global_step: int) -> int:
+    local_step: int = 0
     done: bool = False
 
     gameboy.write_action(1)
-    current_state: State = gameboy.read_state(actions_taken)
+    current_state: State = gameboy.read_state(local_step)
 
-    max_actions: int = 0
-    while not done and actions_taken < max_actions:
-        action: int
-        action = select_action(cfg, q_net, current_state)
+    max_actions: int = cfg.max_actions_start + episode * cfg.max_actions_incr
+    while not done and local_step < max_actions:
+        action: int = select_action(cfg, q_net, current_state, epsilon)
 
         gameboy.write_action(action)
 
-        next_state: State = gameboy.read_state(actions_taken)
+        next_state: State = gameboy.read_state(local_step, current_state)
         transition: Transition = Transition(current_state, action, next_state)
 
         done = transition.terminal
         memory.append(transition)
 
-        if len(memory) >= cfg.start_training and actions_taken % cfg.learn_freq == 0:
+        if len(memory) >= cfg.start_training and local_step % cfg.learn_freq == 0:
             batch: tuple[Tensor, Tensor, Tensor, Tensor, Tensor] = get_batch(memory, cfg.batch_size)
-            update_dqn(cfg, batch, q_net, target_net, optim, cfg.num_actions, cfg.target_update)
+            update_dqn(cfg, batch, q_net, target_net, optim)
+        
+            if global_step % cfg.target_update == 0:
+                update_target(q_net, target_net)
 
         current_state = next_state
-        actions_taken += 1
+        local_step += 1
+        global_step += 1
+
+    return global_step
 
 
 def select_action(cfg: TrainConfig,
                   net: DQN,
-                  state: State) -> int:
-    if random.random() < cfg.epsilon:
+                  state: State,
+                  epsilon: float) -> int:
+    if random.random() < epsilon:
         action: int = random.randint(0, cfg.num_actions-1)
     else:
         state_tensor = torch.tensor([[x / 255.0 for x in state.memory]], dtype=torch.float32).to(cfg.device)
         with torch.no_grad():
             action = int(torch.argmax(net(state_tensor)).item())
-    
-    cfg.epsilon = max(cfg.epsilon * cfg.epsilon_decay, cfg.min_epsilon)
 
     return action
 
@@ -133,9 +175,7 @@ def update_dqn(cfg: TrainConfig,
                batch: tuple[Tensor, Tensor, Tensor, Tensor, Tensor],
                q_net: DQN,
                target_net: DQN,
-               optim: Optimizer,
-               global_step: int,
-               target_update: int) -> None:
+               optim: Optimizer) -> None:
     state, action, next_state, reward, terminal = batch
     state, action, next_state, reward, terminal = state.to(cfg.device), action.to(cfg.device), next_state.to(cfg.device), reward.to(cfg.device), terminal.to(cfg.device)
 
@@ -149,5 +189,22 @@ def update_dqn(cfg: TrainConfig,
     loss.backward()
     optim.step()
 
-    if global_step % target_update == 0:
-        target_net.load_state_dict(q_net.state_dict())
+
+def update_target(q_net: DQN,
+                  target_net: DQN) -> None:
+    target_net.load_state_dict(q_net.state_dict())
+
+
+def save_params(net: DQN,
+                epsilon: float) -> None:
+    torch.save(net.state_dict(), model_path)
+
+    with open(epsilon_path, 'w') as f:
+        f.write(str(epsilon))
+
+
+if __name__ == '__main__':
+    cfg: TrainConfig = TrainConfig()
+    train(cfg)
+
+    gameboy.terminate_emulator()
