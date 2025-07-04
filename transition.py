@@ -339,8 +339,8 @@ class Transition:
         
         revisited_chunk: float = float(self.state['battle_type'] == 0 and self.next_state.location in self.state.visited)
 
-        player_hp_diff: float = sum([get_diff([f'pokemon_{i}_current_hp_2', f'pokemon_{i}_current_hp_1']) for i in range(1, 7)])
-        enemy_hp_diff: float = get_diff(['enemy_pokemon_current_hp_2', 'enemy_pokemon_current_hp_1'])
+        player_hp_diff: float = sum([get_diff([f'pokemon_{i}_current_hp_1', f'pokemon_{i}_current_hp_2']) for i in range(1, 7)])
+        enemy_hp_diff: float = get_diff(['enemy_pokemon_current_hp_1', 'enemy_pokemon_current_hp_2'])
 
         level_diff: float = get_diff(['pokemon_1_level'])
         exp_diff: float = get_diff(['pokemon_1_exp_3', 'pokemon_1_exp_2', 'pokemon_1_exp_1'])

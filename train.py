@@ -29,7 +29,7 @@ class TrainConfig:
 
     lr: float = 1e-3 # learning rate
     start_training: int = 128
-    gamma: float = 0.99 # discount factor
+    gamma: float = 0.9999 # discount factor
     batch_size: int = 128
     epsilon_init: float = 1.0
     epsilon_decay: float = 0.995
@@ -86,8 +86,7 @@ def run_epoch(cfg: TrainConfig,
 
     for episode in range(cfg.max_episodes):
         gameboy.reset_emulator()
-        global_step = run_episode(cfg, q_net, target_net, optim, memory, episode, epsilon, global_step)
-        epsilon = max(cfg.min_epsilon, epsilon * cfg.epsilon_decay)
+        global_step, epsilon = run_episode(cfg, q_net, target_net, optim, memory, episode, epsilon, global_step)
     
     return epsilon
 
@@ -99,7 +98,7 @@ def run_episode(cfg: TrainConfig,
                 memory: ExperienceReplay,
                 episode: int,
                 epsilon: float,
-                global_step: int) -> int:
+                global_step: int) -> tuple[int, float]:
     local_step: int = 0
     done: bool = False
 
@@ -124,12 +123,14 @@ def run_episode(cfg: TrainConfig,
         
             if global_step % cfg.target_update == 0:
                 update_target(q_net, target_net)
+        
+        epsilon = max(cfg.min_epsilon, epsilon * cfg.epsilon_decay)
 
         current_state = next_state
         local_step += 1
         global_step += 1
 
-    return global_step
+    return global_step, epsilon
 
 
 def select_action(cfg: TrainConfig,
