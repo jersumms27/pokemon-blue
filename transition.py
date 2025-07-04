@@ -310,24 +310,80 @@ class Transition:
                     sum([self.state[keys[i]] * (256 ** i) for i in range(len(keys))]))
         
 
-        battle_started: bool = self.next_state['battle_type'] != 0 and self.state['battle_type'] == 0
-        battle_won: bool = self.state['enemy_pokemon_current_hp_1'] + 256 * self.state['enemy_pokemon_current_hp_2'] > 0\
-            and self.next_state['enemy_pokemon_current_hp_2'] + 256 * self.next_state['enemy_pokemon_current_hp_1'] == 0
+        def normalize(value: float, max_diff: float) -> float:
+            return max(-1.0, min(1.0, safe_divide(value, max_diff)))
         
-        whited_out: bool = all(self.next_state[f'pokemon_{i}_current_hp_1'] + 256 * self.next_state[f'pokemon_{i}_current_hp_2'] == 0 for i in range(1, 7))
-        revisited_chunk: bool = self.next_state.location in self.state.visited
 
-        player_hp_diff = safe_divide(sum([get_diff([f'pokemon_{i}_current_hp_2', f'pokemon_{i}_current_hp_1']) for i in range(1, 7)]),
-                                     sum([self.next_state[f'pokemon_{i}_max_hp_2'] + 256 * self.next_state[f'pokemon_{i}_max_hp_1'] for i in range(1, 7)]))
-        enemy_hp_diff: float = safe_divide(get_diff(['enemy_pokemon_current_hp_2', 'enemy_pokemon_current_hp_1']),
-                                        self.next_state['enemy_pokemon_max_hp_2'] + 256 * self.next_state['enemy_pokemon_max_hp_1'])
+        def is_dormant_phase() -> bool:
+            return (
+                self.state['player_x_position'] == self.next_state['player_x_position'] and
+                self.state['player_y_position'] == self.next_state['player_y_position'] and
+                self.state['cursor_x_position'] == self.next_state['cursor_x_position'] and
+                self.state['cursor_y_position'] == self.next_state['cursor_y_position']
+            )
+        
+        if is_dormant_phase():
+            return 0.0
+        
+
+        whited_out: bool = all(self.next_state[f'pokemon_{i}_current_hp_1'] + 256 * self.next_state[f'pokemon_{i}_current_hp_2'] == 0 for i in range(1, 7))
+        if whited_out:
+            return -1.0
+        gym_badge: bool = self.next_state['number_of_badges'] > 0
+        if gym_badge:
+            return 1.0
+
+        battle_started: bool = self.next_state['battle_type'] != 0 and self.state['battle_type'] == 0
+        battle_won: float = float(self.state['enemy_pokemon_current_hp_1'] + 256 * self.state['enemy_pokemon_current_hp_2'] > 0\
+            and self.next_state['enemy_pokemon_current_hp_2'] + 256 * self.next_state['enemy_pokemon_current_hp_1'] == 0)
+        
+        revisited_chunk: float = float(self.state['battle_type'] == 0 and self.next_state.location in self.state.visited)
+
+        player_hp_diff: float = sum([get_diff([f'pokemon_{i}_current_hp_2', f'pokemon_{i}_current_hp_1']) for i in range(1, 7)])
+        enemy_hp_diff: float = get_diff(['enemy_pokemon_current_hp_2', 'enemy_pokemon_current_hp_1'])
+
         level_diff: float = get_diff(['pokemon_1_level'])
         exp_diff: float = get_diff(['pokemon_1_exp_3', 'pokemon_1_exp_2', 'pokemon_1_exp_1'])
         party_diff: float = get_diff(['number_of_pokemon_in_party'])
         money_diff: float = get_diff(['money_3', 'money_2', 'money_1'])
         battle_diff: float = float(battle_started)
 
-        return 0.0
+        player_hp_norm: float = normalize(player_hp_diff, sum([self.next_state[f'pokemon_{i}_max_hp_2'] + 256 * self.next_state[f'pokemon_{i}_max_hp_1'] for i in range(1, int(self.next_state['number_of_pokemon_in_party'])+1)]))
+        enemy_hp_norm: float = normalize(enemy_hp_diff, self.next_state['enemy_pokemon_max_hp_2'] + 256 * self.next_state['enemy_pokemon_max_hp_1'])
+
+        level_norm: float = level_diff
+        exp_norm: float = normalize(exp_diff, 5000.0)
+        party_norm: float = party_diff
+        money_norm: float = normalize(money_diff, 20000.0)
+        battle_norm: float = battle_diff
+
+        player_hp_weight: float = 0.20
+        enemy_hp_weight: float = -0.10
+
+        level_weight: float = 0.20
+        exp_weight: float = 0.15
+        party_weight: float = 0.10
+        money_weight: float = 0.10
+        battle_weight: float = 0.15
+
+        revisit_weight: float = -0.10
+        win_weight: float = 0.60
+
+        reward: float = (
+            player_hp_weight * player_hp_norm +
+            enemy_hp_weight * enemy_hp_norm +
+            level_weight * level_norm +
+            exp_weight * exp_norm +
+            party_weight * party_norm +
+            money_weight * money_norm +
+            battle_weight * battle_norm
+        )
+        reward += (
+            revisit_weight * revisited_chunk +
+            win_weight * battle_won
+        )
+
+        return max(-0.99, min(0.99, reward))
     
 
     def __iter__(self) -> Iterator[Union[State, int, float, bool]]:
