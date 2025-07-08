@@ -292,6 +292,16 @@ class State:
         return ' '.join(str(key) + ':' + str(val) for key, val in zip(self.memory_map.keys(), self.memory))
     
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, State):
+            return False
+
+        for attr in State.memory_list[:-3]:
+            if self.__getitem__(attr) != other[attr]:
+                return False
+        return True
+    
+
 State.memory_map = {State.memory_list[i]: i for i in range(len(State.memory_list))}
     
 
@@ -310,12 +320,8 @@ class Transition:
 
 
     def _is_dormant_phase(self) -> bool:
-        return (
-            self.state['player_x_position'] == self.next_state['player_x_position'] and
-            self.state['player_y_position'] == self.next_state['player_y_position'] and
-            self.state['cursor_x_position'] == self.next_state['cursor_x_position'] and
-            self.state['cursor_y_position'] == self.next_state['cursor_y_position']
-        )
+        return self.state == self.next_state
+    
 
     def calculate_reward(self) -> float:
         def safe_divide(numerator: float, denominator: float) -> float:
@@ -333,7 +339,7 @@ class Transition:
         if self.is_dormant:
             return 0.0
 
-        whited_out: bool = all(self.next_state[f'pokemon_{i}_current_hp_1'] + 256 * self.next_state[f'pokemon_{i}_current_hp_2'] == 0 for i in range(1, 7))
+        whited_out: bool = all(self.next_state[f'pokemon_{i}_current_hp_1'] + 256 * self.next_state[f'pokemon_{i}_current_hp_2'] == 0 for i in range(1, int(self.next_state['number_of_pokemon_in_party'])+1))
         if whited_out:
             return -1.0
         gym_badge: bool = self.next_state['number_of_badges'] > 0

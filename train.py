@@ -9,18 +9,20 @@ import torch.nn.functional as F
 from dqn import DQN
 from memory import ExperienceReplay
 from transition import State, Transition
+from reward import RewardTracker
 import gameboy
 
 model_path: str = 'C:/Users/jerem/Pokemon Blue DQN/model/dqn_params.pth'
 epsilon_path: str = 'C:/Users/jerem/Pokemon Blue DQN/model/epsilon.txt'
+reward_path: str = 'C/:Users/jerem/Pokemon Blue DQN/analysis/reward.json'
 
 @dataclass
 class TrainConfig:
     state_size: int = 215
     hidden_sizes: list[int] = field(default_factory=lambda: [256, 256, 128]) # sizes of hidden layers
     num_actions: int = 6 # A, B, --SELECT, START,-- RIGHT, LEFT, UP, DOWN
-    max_epochs: int = 1
-    max_episodes: int = 10 # number of iterations before training ends
+    max_epochs: int = 2
+    max_episodes: int = 30 # number of iterations before training ends
     max_actions_start: int = 2000
     max_actions_incr: int = 100
 
@@ -32,7 +34,7 @@ class TrainConfig:
     gamma: float = 0.99 # discount factor
     batch_size: int = 256
     epsilon_init: float = 1.0
-    epsilon_decay: float = 0.999995
+    epsilon_decay: float = 0.999999
     min_epsilon: float = 0.05
     target_update: int = 2000 # how often to update target network to match q network
     learn_freq: int = 4 # how often to train q network
@@ -45,6 +47,9 @@ def train(cfg: TrainConfig) -> None:
     memory: ExperienceReplay
     q_net, target_net, optim, memory = setup_training(cfg)
 
+    reward_tracker: RewardTracker = RewardTracker()
+    reward_tracker.load_from_file(reward_path)
+
     epsilon: float
     try:
         with open(epsilon_path, 'r') as f:
@@ -53,9 +58,12 @@ def train(cfg: TrainConfig) -> None:
         epsilon = cfg.epsilon_init
     
     for epoch in range(cfg.max_epochs):
-        epsilon = run_epoch(cfg, q_net, target_net, optim, memory, epsilon)
+        epsilon = run_epoch(cfg, q_net, target_net, optim, memory, epsilon, reward_tracker)
+
+        reward_tracker.finish_epoch()
 
         save_params(q_net, epsilon)
+        reward_tracker.save_to_file(reward_path)
 
 
 
@@ -81,12 +89,15 @@ def run_epoch(cfg: TrainConfig,
               target_net: DQN,
               optim: Optimizer,
               memory: ExperienceReplay,
-              epsilon: float) -> float:
+              epsilon: float,
+              reward_tracker: RewardTracker) -> float:
     global_step: int = 0
 
     for episode in range(cfg.max_episodes):
         gameboy.reset_emulator()
-        global_step, epsilon = run_episode(cfg, q_net, target_net, optim, memory, episode, epsilon, global_step)
+        global_step, epsilon = run_episode(cfg, q_net, target_net, optim, memory, episode, epsilon, global_step, reward_tracker)
+
+        reward_tracker.finish_episode()
 
         if (episode + 1) % 10 == 0:
             save_params(q_net, epsilon)
@@ -101,7 +112,8 @@ def run_episode(cfg: TrainConfig,
                 memory: ExperienceReplay,
                 episode: int,
                 epsilon: float,
-                global_step: int) -> tuple[int, float]:
+                global_step: int,
+                reward_tracker: RewardTracker) -> tuple[int, float]:
     local_step: int = 0
     done: bool = False
 
@@ -118,6 +130,9 @@ def run_episode(cfg: TrainConfig,
         transition: Transition = Transition(current_state, action, next_state)
 
         done = transition.terminal
+
+        reward_tracker.add_reward(transition.reward)
+
         if not transition.is_dormant:
             memory.append(transition)
 
