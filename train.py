@@ -21,7 +21,7 @@ class TrainConfig:
     state_size: int = 215
     hidden_sizes: list[int] = field(default_factory=lambda: [256, 256, 128]) # sizes of hidden layers
     num_actions: int = 6 # A, B, --SELECT, START,-- RIGHT, LEFT, UP, DOWN
-    max_epochs: int = 15
+    max_epochs: int = 5
     max_episodes: int = 30 # number of iterations before training ends
     max_actions_start: int = 2000
     max_actions_incr: int = 100
@@ -48,7 +48,6 @@ def train(cfg: TrainConfig) -> None:
     q_net, target_net, optim, memory = setup_training(cfg)
 
     reward_tracker: RewardTracker = RewardTracker()
-    reward_tracker.load_from_file(reward_path)
 
     epsilon: float
     try:
