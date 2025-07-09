@@ -14,14 +14,14 @@ import gameboy
 
 model_path: str = 'C:/Users/jerem/Pokemon Blue DQN/model/dqn_params.pth'
 epsilon_path: str = 'C:/Users/jerem/Pokemon Blue DQN/model/epsilon.txt'
-reward_path: str = 'C/:Users/jerem/Pokemon Blue DQN/analysis/reward.json'
+reward_path: str = 'C:/Users/jerem/Pokemon Blue DQN/analysis/reward.json'
 
 @dataclass
 class TrainConfig:
     state_size: int = 215
     hidden_sizes: list[int] = field(default_factory=lambda: [256, 256, 128]) # sizes of hidden layers
     num_actions: int = 6 # A, B, --SELECT, START,-- RIGHT, LEFT, UP, DOWN
-    max_epochs: int = 2
+    max_epochs: int = 15
     max_episodes: int = 30 # number of iterations before training ends
     max_actions_start: int = 2000
     max_actions_incr: int = 100

@@ -370,17 +370,17 @@ class Transition:
         money_norm: float = normalize(money_diff, 20000.0)
         battle_norm: float = battle_diff
 
-        player_hp_weight: float = 0.15
-        enemy_hp_weight: float = -0.10
+        player_hp_weight: float = 0.10
+        enemy_hp_weight: float = -0.00
 
         level_weight: float = 0.10
-        exp_weight: float = 0.05
+        exp_weight: float = 0.10
         party_weight: float = 0.10
         money_weight: float = 0.05
-        battle_weight: float = 0.10
+        battle_weight: float = 0.00
 
-        exploration_weight: float = 0.10
-        win_weight: float = 0.25
+        exploration_weight: float = 0.20
+        win_weight: float = 0.35
 
         reward: float = (
             player_hp_weight * player_hp_norm +

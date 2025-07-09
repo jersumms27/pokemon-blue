@@ -4,9 +4,20 @@ import numpy as np
 
 
 class RewardTracker:
-    def __init__(self) -> None:
-        self.episode_rewards: list[float] = []
-        self.epoch_rewards: list[float] = []
+    def __init__(self,
+                 path: str | None = None) -> None:
+        loaded: bool = False
+
+        if path is not None:
+            try:
+                self.load_from_file(path)
+                loaded = True
+            except (FileNotFoundError, json.JSONDecodeError):
+                loaded = False
+
+        if not loaded:
+            self.episode_rewards: list[float] = []
+            self.epoch_rewards: list[float] = []
         self.current_episode_reward: float = 0.0
         self.current_epoch_reward: float = 0.0
     
@@ -57,13 +68,10 @@ class RewardTracker:
 
     def load_from_file(self,
                        path: str) -> None:
-        try:
-            with open(path, 'r') as f:
-                data = json.load(f)
-                self.episode_rewards = data.get('episode_rewards', [])
-                self.epoch_rewards = data.get('epoch_rewards', [])
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass
+        with open(path, 'r') as f:
+            data = json.load(f)
+            self.episode_rewards = data.get('episode_rewards', [])
+            self.epoch_rewards = data.get('epoch_rewards', [])
     
 
     def clear_data(self) -> None:
